@@ -16,23 +16,25 @@ class OzonApi{
     public function getOrder(){
 
         $arParams = array(
-        "dir"=> "ASC",
-        "filter"=> array(
-                    "delivering_date_from"=> "2023-08-24T14:15:22Z",
-                    "delivering_date_to"=> "2023-08-25T14:15:22Z",
-                    "delivery_method_id"=> [],
-                    "provider_id"=> [],
-                    "status"=> "awaiting_packaging",
-                    "warehouse_id"=> []),
-        "limit"=> 100,
-        "offset"=> 0,
-        "with"=> array(
-                    "analytics_data"=> true,
-                    "barcodes"=> true,
-                    "financial_data"=> true,
-                    "translit"=> true),
+    "dir"=> "ASC",
+    "filter" => array(
+        "delivery_method_id"=> [],
+        "provider_id"=> [],
+        "since"=> "2023-12-01T00:00:11Z",
+        "status"=> "delivered",
+        "to"=> "2024-01-24T00:00:11Z",
+        "warehouse_id"=> []
+    ),
+    "limit"=> 100,
+    "offset"=> 0,
+    "with"=> array(
+        "analytics_data"=> true,
+        "barcodes"=> true,
+        "financial_data"=> true,
+        "translit"=> true)
         );
-        return $this->curl("/v3/posting/fbs/unfulfilled/list", $arParams);
+    
+        return $this->curl("/v3/posting/fbs/list", $arParams);
     }
 
     protected function getWhereHouse(){
@@ -43,7 +45,7 @@ class OzonApi{
         $ch = curl_init("https://api-seller.ozon.ru".$method);
         curl_setopt_array($ch, array(
             CURLOPT_HEADER => false,
-            CURLOPT_RETURNTRANSFER => false,
+            CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => array("Content-Type: application/json", "Client-Id: ".$this->client_id, "Api-Key: ".$this->api_key),
             CURLOPT_POSTFIELDS => json_encode($arParams)
@@ -51,6 +53,8 @@ class OzonApi{
 
         $get = curl_exec($ch);
         $get = json_decode($get,1);
+
+        curl_close($ch);
 
         return $get;
     }
