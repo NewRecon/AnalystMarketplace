@@ -1,7 +1,7 @@
 <?php
 
-class Db{
-
+class Db
+{
     private $conn;
 
     private $params = array(
@@ -31,9 +31,16 @@ class Db{
             $opt["port"],
             $opt["socket"]
         );
-        
-
     }
 
+    function __destruct()
+    {
+        $this->conn->close();
+        unset($this->conn);
+    }
 
+    public function queryDB($query)
+    {
+        return mysqli_query($this->conn, $query);
+    }
 }
